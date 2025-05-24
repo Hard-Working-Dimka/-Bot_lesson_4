@@ -47,8 +47,8 @@ def handle_solution_attempt(update: Update, context: CallbackContext):
     return Handlers.QUESTION
 
 
-def handle_new_question_request(update: Update, context: CallbackContext):
-    question = get_question()
+def handle_new_question_request(update: Update, context: CallbackContext, path_to_questions):
+    question = get_question(path_to_questions)
     update.message.reply_text(text=question[0], reply_markup=reply_markup)
     context.user_data['right_answer'] = question[1]
     return Handlers.RESULT
@@ -63,9 +63,11 @@ def main():
         entry_points=[CommandHandler('start', start)],
 
         states={
-            Handlers.QUESTION: [MessageHandler(Filters.regex('^(Новый вопрос)$'),
-                                               handle_new_question_request, ),
-                                ],
+            Handlers.QUESTION: [
+                MessageHandler(Filters.regex('^(Новый вопрос)$'),
+                               lambda update, context: handle_new_question_request(update, context,
+                                                                                   env.str('PATH_TO_QUESTIONS'))),
+            ],
 
             Handlers.RESULT: [MessageHandler(Filters.regex('^(Сдаться)$'),
                                              handle_give_up),

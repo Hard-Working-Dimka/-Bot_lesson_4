@@ -1,13 +1,12 @@
 import random
 
 
-def get_question():
-    with open("questions/1vs1200.txt", "r", encoding='KOI8-R') as file:
+def get_question(path_to_questions):
+    with open(path_to_questions, "r", encoding='KOI8-R') as file:
         questions = file.read()
 
     question_blocks = questions.split('\n\n\n')
     questions = {}
-
 
     for question_block in question_blocks:
         question_block = question_block.strip().split('\n\n')
@@ -19,5 +18,3 @@ def get_question():
         questions[question_name] = question_answer
 
     return random.choice(list(questions.items()))
-
-
