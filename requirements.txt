@@ -3,3 +3,4 @@ urllib3==1.26.15
 environs==14.1.1
 standard-imghdr==3.13.0
 redis~=6.1.0
+vk-api==11.9.9
