@@ -1,7 +1,4 @@
-import random
-
-
-def get_question(path_to_questions):
+def get_questions(path_to_questions):
     with open(path_to_questions, "r", encoding='KOI8-R') as file:
         questions = file.read()
 
@@ -16,5 +13,4 @@ def get_question(path_to_questions):
             if question.startswith('Ответ'):
                 question_answer = question.split('\n', maxsplit=1)[1].replace('\n', ' ').strip()
         questions[question_name] = question_answer
-
-    return random.choice(list(questions.items()))
+    return questions

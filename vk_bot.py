@@ -1,5 +1,5 @@
 import random
-from file_processing import get_question
+from file_processing import get_questions
 from redis_connection import connect_to_db
 
 import vk_api as vk
@@ -37,8 +37,9 @@ def check_answer(event, vk_api, keyboard, db):
         )
 
 
-def get_new_question(event, vk_api, keyboard, db, path_to_questions):
-    question = get_question(path_to_questions)
+def get_new_question(event, vk_api, keyboard, db, questions):
+    # question = get_question(path_to_questions)
+    question = random.choice(list(questions.items()))
     db.set(event.user_id, question[1])
     vk_api.messages.send(
         user_id=event.user_id,
@@ -52,6 +53,8 @@ if __name__ == "__main__":
     env.read_env()
 
     vk_session = vk.VkApi(token=env('VK_API_KEY'))
+
+    questions = get_questions(env.str('PATH_TO_QUESTIONS'))
 
     host = env.str('HOST')
     port = env.int('PORT')
@@ -73,7 +76,7 @@ if __name__ == "__main__":
             if event.text == "Сдаться":
                 give_up(event, vk_api, keyboard, db)
             elif event.text == "Новый вопрос":
-                get_new_question(event, vk_api, keyboard, db, env('PATH_TO_QUESTIONS'))
+                get_new_question(event, vk_api, keyboard, db, questions)
             elif event.text == "Мой счет":
                 pass
             elif event.text == "/start":

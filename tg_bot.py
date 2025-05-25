@@ -3,8 +3,9 @@ import telegram
 from environs import env
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
+import random
 
-from file_processing import get_question
+from file_processing import get_questions
 
 keyboard = [['Новый вопрос', 'Сдаться'],
             ['Мой счет']]
@@ -47,8 +48,8 @@ def handle_solution_attempt(update: Update, context: CallbackContext):
     return Handlers.QUESTION
 
 
-def handle_new_question_request(update: Update, context: CallbackContext, path_to_questions):
-    question = get_question(path_to_questions)
+def handle_new_question_request(update: Update, context: CallbackContext, questions):
+    question = random.choice(list(questions.items()))
     update.message.reply_text(text=question[0], reply_markup=reply_markup)
     context.user_data['right_answer'] = question[1]
     return Handlers.RESULT
@@ -58,6 +59,8 @@ def main():
     env.read_env()
     tg_bot = Updater(env('TG_TOKEN'))
 
+    questions = get_questions(env.str('PATH_TO_QUESTIONS'))
+
     dispatcher = tg_bot.dispatcher
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
@@ -65,8 +68,7 @@ def main():
         states={
             Handlers.QUESTION: [
                 MessageHandler(Filters.regex('^(Новый вопрос)$'),
-                               lambda update, context: handle_new_question_request(update, context,
-                                                                                   env.str('PATH_TO_QUESTIONS'))),
+                               lambda update, context: handle_new_question_request(update, context, questions)),
             ],
 
             Handlers.RESULT: [MessageHandler(Filters.regex('^(Сдаться)$'),
