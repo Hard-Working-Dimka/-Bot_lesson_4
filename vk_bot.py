@@ -72,14 +72,15 @@ if __name__ == "__main__":
     vk_api = vk_session.get_api()
     longpoll = VkLongPoll(vk_session)
     for event in longpoll.listen():
-        if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            if event.text == "Сдаться":
-                give_up(event, vk_api, keyboard, db)
-            elif event.text == "Новый вопрос":
-                get_new_question(event, vk_api, keyboard, db, questions)
-            elif event.text == "Мой счет":
-                pass
-            elif event.text == "/start":
-                pass
-            else:
-                check_answer(event, vk_api, keyboard, db)
+        if event.type != VkEventType.MESSAGE_NEW or not event.to_me:
+            continue
+        if event.text == "Сдаться":
+            give_up(event, vk_api, keyboard, db)
+        elif event.text == "Новый вопрос":
+            get_new_question(event, vk_api, keyboard, db, questions)
+        elif event.text == "Мой счет":
+            pass
+        elif event.text == "/start":
+            pass
+        else:
+            check_answer(event, vk_api, keyboard, db)
