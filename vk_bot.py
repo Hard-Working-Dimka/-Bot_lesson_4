@@ -38,7 +38,6 @@ def check_answer(event, vk_api, keyboard, db):
 
 
 def get_new_question(event, vk_api, keyboard, db, questions):
-    # question = get_question(path_to_questions)
     question = random.choice(list(questions.items()))
     db.set(event.user_id, question[1])
     vk_api.messages.send(
